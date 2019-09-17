@@ -17,7 +17,7 @@ int element_size = 3;
 int max_size = 21;
 
 void callBack_demo(int, void*);
-Mat src, dst;
+Mat src, dst, gray;
 int main(int argc, const char * argv[]) {
     // insert code here...
     std::cout << "Hello, World!\n";
@@ -26,11 +26,13 @@ int main(int argc, const char * argv[]) {
     if (src.empty()) {
         return -1;
     }
+    cvtColor(src, gray, COLOR_BGR2GRAY);
     String outWindow = "out window";
     namedWindow(outWindow);
-    imshow(outWindow, src);
+    imshow(outWindow, gray);
     
     namedWindow(OUTPUT_WIN);
+    createTrackbar("Element Size", OUTPUT_WIN, &element_size, max_size, callBack_demo);
     callBack_demo(0, 0);
     
     waitKey(0);
@@ -39,6 +41,9 @@ int main(int argc, const char * argv[]) {
 void callBack_demo(int, void*){
     int s = element_size * 2 + 1;
     Mat structElement = getStructuringElement(MORPH_RECT, Size(s, s), Point(-1, -1));
-    dilate(src, dst, structElement, Point(-1, -1), 1);
+    // 膨胀
+    dilate(gray, dst, structElement, Point(-1, -1), 1);
+    // 腐蚀 最小像素值覆盖中心像素值
+//    erode(src, dst, structElement);
     imshow(OUTPUT_WIN, dst);
 }
